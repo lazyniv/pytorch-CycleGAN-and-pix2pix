@@ -5,6 +5,7 @@ It also includes common transformation functions (e.g., get_transform, __scale_w
 import random
 import numpy as np
 import torch.utils.data as data
+import torch
 from PIL import Image
 import torchvision.transforms as transforms
 from abc import ABC, abstractmethod
@@ -79,9 +80,21 @@ def get_params(opt, size):
 
 
 def get_transform(opt, params=None, grayscale=False, method=Image.BICUBIC, convert=True):
+    transform_list = [transforms.RandomHorizontalFlip(),
+                      transforms.Lambda(lambda img: np.array(img, dtype=np.int16)),
+                      transforms.Lambda(lambda arr: np.float32(arr / 32768.0)),
+                      transforms.Lambda(lambda arr: torch.from_numpy(arr.reshape(1, arr.shape[0], arr.shape[1]))),
+                      transforms.Normalize((0.2,), (0.5,))  # TODO try to change
+                      ]
+    return transforms.Compose(transform_list)
+
+
+"""
+def get_transform(opt, params=None, grayscale=False, method=Image.BICUBIC, convert=True):
     transform_list = []
     if grayscale:
-        transform_list.append(transforms.Grayscale(1))
+        transform_list.append(transforms.Grayscale(1))  # Попадает в transform_list TODO Можно убрать, так как изначально у нас одноканальные изображения
+    
     if 'resize' in opt.preprocess:
         osize = [opt.load_size, opt.load_size]
         transform_list.append(transforms.Resize(osize, method))
@@ -95,22 +108,23 @@ def get_transform(opt, params=None, grayscale=False, method=Image.BICUBIC, conve
             transform_list.append(transforms.Lambda(lambda img: __crop(img, params['crop_pos'], opt.crop_size)))
 
     if opt.preprocess == 'none':
-        transform_list.append(transforms.Lambda(lambda img: __make_power_2(img, base=4, method=method)))
+        transform_list.append(transforms.Lambda(lambda img: __make_power_2(img, base=4, method=method)))  #Попадает в transform_list TODO бесполезно в нашем случае, т.к. input_shape = (256,256)
 
     if not opt.no_flip:
         if params is None:
-            transform_list.append(transforms.RandomHorizontalFlip())
+            transform_list.append(transforms.RandomHorizontalFlip())  #Попадает в transform_list TODO Можно поэкспериментировать и убрать
         elif params['flip']:
             transform_list.append(transforms.Lambda(lambda img: __flip(img, params['flip'])))
 
-    if convert:
+    if convert:  # Всегда True, TODO  можно поэкспериментировать
         transform_list += [transforms.ToTensor()]
         if grayscale:
             transform_list += [transforms.Normalize((0.5,), (0.5,))]
         else:
             transform_list += [transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
+    
     return transforms.Compose(transform_list)
-
+"""
 
 def __make_power_2(img, base, method=Image.BICUBIC):
     ow, oh = img.size
