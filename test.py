@@ -47,7 +47,7 @@ def main():
     epochs = opt.epoch
     web_dir = os.path.join(opt.results_dir, opt.name, opt.direction_label)
     os.makedirs(web_dir, exist_ok=True)
-    save_joined_images_dir = os.path.join(opt.joined_results_dir, opt.direction_label, 'epochs_' + str(epochs))
+    save_joined_images_dir = os.path.join(opt.joined_results_dir, opt.direction_label, 'epochs-' + '_'.join(epochs))
     os.makedirs(save_joined_images_dir, exist_ok=True)
 
     for epoch in epochs:
@@ -144,7 +144,6 @@ def __get__marked_fake_images(real_image_name, fake_images_dir, epochs, domain):
         __mark_image(fake_img, "fake " + domain + '_' + epoch + 'epoch')
         fake_images.append(fake_img)
     return fake_images
-
 
 if __name__ == '__main__':
     main()
