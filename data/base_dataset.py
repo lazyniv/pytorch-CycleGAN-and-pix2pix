@@ -80,7 +80,7 @@ def get_params(opt, size):
 
 
 def get_transform(opt, params=None, grayscale=False, method=Image.BICUBIC, convert=True):
-    transform_list = [transforms.RandomHorizontalFlip(),
+    transform_list = [#transforms.RandomHorizontalFlip(),
                       transforms.Lambda(lambda img: np.array(img, dtype=np.int16)),
                       transforms.Lambda(lambda arr: np.float32(arr / 32768.0)),
                       transforms.Lambda(lambda arr: torch.from_numpy(arr.reshape(1, arr.shape[0], arr.shape[1]))),
