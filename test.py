@@ -46,9 +46,10 @@ def main():
     opt.display_id = -1  # no visdom display; the test code saves the results to a HTML file.
     epochs = opt.epoch
     web_dir = os.path.join(opt.results_dir, opt.name, opt.direction_label)
-    os.makedirs(web_dir, exist_ok=True)
+    #os.makedirs(web_dir, exist_ok=True)
     save_joined_images_dir = os.path.join(opt.results_dir, opt.name, opt.direction_label + '_joined')
-    os.makedirs(save_joined_images_dir, exist_ok=True)
+    #os.makedirs(save_joined_images_dir, exist_ok=True)
+    """
     for epoch in epochs:
         opt.epoch = epoch
         dataset = create_dataset(opt)  # create a dataset given opt.dataset_mode and other options
@@ -73,15 +74,16 @@ def main():
                 print('processing (%04d)-th image... %s' % (i, img_path))
             save_images(web_dir, visuals, img_path, epoch, is_test=True, aspect_ratio=opt.aspect_ratio,
                         width=opt.display_winsize)
+    """
     domains = opt.direction_label.split('to')
-    __join_real_fake_images(opt.dataroot, web_dir, save_joined_images_dir, epochs, src_domain=domains[0], target_domain=domains[1])
+    join_real_fake_images(opt.dataroot, web_dir, save_joined_images_dir, epochs, src_domain=domains[0], target_domain=domains[1])
 
 
 if __name__ == '__main__':
     main()
 
 
-def __join_real_fake_images(src_images_dir, fake_images_dir, save_dir, epochs, src_domain, target_domain):
+def join_real_fake_images(src_images_dir, fake_images_dir, save_dir, epochs, src_domain, target_domain):
     real_images = os.listdir(src_images_dir)
 
     for img in real_images:
