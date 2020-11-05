@@ -18,7 +18,6 @@ def save_images(image_dir, visuals, image_path, epoch, is_test, aspect_ratio=1.0
 
     Parameters:
         image_dir (str)          -- the directory to save images
-        webpage (the HTML class) -- the HTML webpage class that stores these imaegs (see html.py for more details)
         visuals (OrderedDict)    -- an ordered dictionary that stores (name, images (either tensor or numpy) ) pairs
         image_path (str)         -- the string is used to create image paths
         aspect_ratio (float)     -- the aspect ratio of saved images

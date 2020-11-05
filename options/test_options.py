@@ -16,6 +16,7 @@ class TestOptions(BaseOptions):
         parser.add_argument('--eval', action='store_true', help='use eval mode during test time.')
         parser.add_argument('--num_test', type=int, default=float("inf"), help='how many test images to run')
         parser.add_argument('--direction_label', type=str, default='AtoB')
+        parser.add_argument('--generator_label', type=str, default='A')
         # rewrite devalue values
         parser.set_defaults(model='test')
         # To avoid cropping, the load_size should be the same as crop_size
