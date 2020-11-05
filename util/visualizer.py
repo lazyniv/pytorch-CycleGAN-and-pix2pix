@@ -13,7 +13,7 @@ else:
     VisdomExceptionBase = ConnectionError
 
 
-def gosave_images(image_dir, visuals, image_path, epoch, is_test, aspect_ratio=1.0, width=256):
+def save_images(image_dir, visuals, image_path, epoch, is_test, aspect_ratio=1.0, width=256):
     """Save images to the disk.
 
     Parameters:
