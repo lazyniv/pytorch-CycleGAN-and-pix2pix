@@ -79,15 +79,12 @@ def main():
     join_real_fake_images(opt.dataroot, web_dir, save_joined_images_dir, epochs, src_domain=domains[0], target_domain=domains[1])
 
 
-if __name__ == '__main__':
-    main()
-
-
 def join_real_fake_images(src_images_dir, fake_images_dir, save_dir, epochs, src_domain, target_domain):
     real_images = os.listdir(src_images_dir)
 
     for img in real_images:
         img_name, _ = os.path.splitext(img)
+        print("processing ---> " + img_name)
         real_img_path = os.path.join(src_images_dir, img)
         img = __get_uint8_image(real_img_path)
         __mark_image(img, "real " + src_domain)
@@ -110,6 +107,7 @@ def join_real_fake_images(src_images_dir, fake_images_dir, save_dir, epochs, src
         i = 1
         for fake_img in fake_images:
             new_im.paste(fake_img, (x_offset, y_offset))
+            i += 1
             if i % 4 == 0:
                 y_offset += img.size[1]
                 x_offset = 0
@@ -141,3 +139,6 @@ def __get__marked_fake_images(real_image_name, fake_images_dir, epochs, domain):
         __mark_image(fake_img, "fake " + domain + '_' + epoch + 'epoch')
         fake_images.append(fake_img)
     return fake_images
+
+if __name__ == '__main__':
+    main()
