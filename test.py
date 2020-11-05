@@ -46,9 +46,9 @@ def main():
     opt.display_id = -1  # no visdom display; the test code saves the results to a HTML file.
     epochs = opt.epoch
     web_dir = os.path.join(opt.results_dir, opt.name, opt.direction_label)
-    #os.makedirs(web_dir, exist_ok=True)
-    save_joined_images_dir = os.path.join(opt.results_dir, opt.name, opt.direction_label + '_joined')
-    #os.makedirs(save_joined_images_dir, exist_ok=True)
+    os.makedirs(web_dir, exist_ok=True)
+    save_joined_images_dir = os.path.join(opt.joined_results_dir, opt.direction_label, 'epochs_' + str(epochs))
+    os.makedirs(save_joined_images_dir, exist_ok=True)
 
     for epoch in epochs:
         opt.epoch = epoch
@@ -80,11 +80,16 @@ def main():
 
 
 def join_real_fake_images(src_images_dir, fake_images_dir, save_dir, epochs, src_domain, target_domain):
+
     real_images = os.listdir(src_images_dir)
 
     for img in real_images:
         img_name, _ = os.path.splitext(img)
         print("processing ---> " + img_name)
+        study_name = img_name.split('_')[0]
+        study_dir = os.path.join(save_dir, study_name)
+        if not os.path.isdir(study_dir):
+            os.mkdir(study_dir)
         real_img_path = os.path.join(src_images_dir, img)
         img = __get_uint8_image(real_img_path)
         __mark_image(img, "real " + src_domain)
@@ -98,7 +103,7 @@ def join_real_fake_images(src_images_dir, fake_images_dir, save_dir, epochs, src
             else:
                 height = img.size[1] * (len(epochs) // 4) + 1
 
-        new_im = Image.new('LA', (width, height))
+        new_im = Image.new('LA', (256 * 4, 256 * 4))
 
         x_offset, y_offset = 0, 0
         new_im.paste(img, (x_offset, y_offset))
@@ -113,7 +118,7 @@ def join_real_fake_images(src_images_dir, fake_images_dir, save_dir, epochs, src
                 x_offset = 0
             else:
                 x_offset += img.size[0]
-        new_filename = os.path.join(save_dir, img_name)
+        new_filename = os.path.join(study_dir, img_name)
         new_im.save(new_filename + '.png')
 
 
