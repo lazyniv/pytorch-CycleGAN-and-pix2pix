@@ -69,7 +69,7 @@ def main():
             img_path = model.get_image_paths()  # get image paths
             if i % 5 == 0:  # save images to an HTML file
                 print('processing (%04d)-th image... %s' % (i, img_path))
-            save_images(web_dir, visuals, img_path, is_test=True, aspect_ratio=opt.aspect_ratio,
+            save_images(web_dir, visuals, img_path, epoch, is_test=True, aspect_ratio=opt.aspect_ratio,
                         width=opt.display_winsize)
     domains = opt.direction_label.split('to')
     __join_real_fake_images(opt.dataroot, web_dir, save_joined_images_dir, epochs, src_domain=domains[0], target_domain=domains[1])
