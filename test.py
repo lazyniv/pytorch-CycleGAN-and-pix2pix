@@ -46,7 +46,9 @@ def main():
     opt.display_id = -1  # no visdom display; the test code saves the results to a HTML file.
     epochs = opt.epoch
     web_dir = os.path.join(opt.results_dir, opt.name, opt.direction_label)
+    os.makedirs(web_dir, exist_ok=True)
     save_joined_images_dir = os.path.join(opt.results_dir, opt.name, opt.direction_label + '_joined')
+    os.makedirs(save_joined_images_dir, exist_ok=True)
     for epoch in epochs:
         opt.epoch = epoch
         dataset = create_dataset(opt)  # create a dataset given opt.dataset_mode and other options
