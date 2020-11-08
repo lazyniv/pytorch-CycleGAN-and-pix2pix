@@ -66,7 +66,7 @@ def main():
             model.eval()
         save_dir_by_epoch = save_dir
         if opt.group_results_by_epoch:
-            save_dir_by_epoch = os.path.join(save_dir, '_{}epoch'.format(epoch))
+            save_dir_by_epoch = os.path.join(save_dir, '{}epoch'.format(epoch))
             os.makedirs(save_dir_by_epoch)
         for i, data in enumerate(dataset):
             if i >= opt.num_test:  # only apply our model to opt.num_test images.
