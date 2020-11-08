@@ -51,6 +51,7 @@ def main():
     os.makedirs(save_dir, exist_ok=True)
 
     for epoch in epochs:
+        print('#################processing {} epoch######################'.format(epoch))
         opt.epoch = epoch
         dataset = create_dataset(opt)  # create a dataset given opt.dataset_mode and other options
         model = create_model(opt)  # create a model given opt.model and other options
