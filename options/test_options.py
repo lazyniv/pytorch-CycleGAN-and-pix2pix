@@ -18,6 +18,9 @@ class TestOptions(BaseOptions):
         parser.add_argument('--direction_label', type=str, default='AtoB', help='direction of transfer e.g. T1toT2')
         parser.add_argument('--generator_label', type=str, default='A', help='which generator we would use')
         parser.add_argument('--joined_results_dir', type=str, required=True, help='save joined results here')
+        parser.add_argument('--group_results_by_epoch', action='store_true', help='group the results by epoch folders')
+        parser.add_argument('--join_results', action='store_true', help='join the results of many epochs to one image')
+        parser.add_argument('--test_on_all_epochs', action='store_true', help='run inference on all of the epochs')
         # rewrite devalue values
         parser.set_defaults(model='test')
         # To avoid cropping, the load_size should be the same as crop_size

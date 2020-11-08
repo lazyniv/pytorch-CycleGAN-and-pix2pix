@@ -45,10 +45,10 @@ def main():
     opt.no_flip = True  # no flip; comment this line if results on flipped images are needed.
     opt.display_id = -1  # no visdom display; the test code saves the results to a HTML file.
     epochs = opt.epoch
-    web_dir = os.path.join(opt.results_dir, opt.name, opt.direction_label)
-    os.makedirs(web_dir, exist_ok=True)
-    save_joined_images_dir = os.path.join(opt.joined_results_dir, opt.direction_label, 'epochs-' + '_'.join(epochs))
-    os.makedirs(save_joined_images_dir, exist_ok=True)
+    if opt.test_on_all_epochs:
+        epochs = [str(epoch) for epoch in range(1, 87)]
+    save_dir = os.path.join(opt.results_dir, opt.name, opt.direction_label)
+    os.makedirs(save_dir, exist_ok=True)
 
     for epoch in epochs:
         opt.epoch = epoch
@@ -57,12 +57,16 @@ def main():
         model.setup(opt)  # regular setup: load and print networks; create schedulers
         # create a website
         if opt.load_iter > 0:  # load_iter is 0 by default
-            web_dir = '{:s}_iter{:d}'.format(web_dir, opt.load_iter)
+            save_dir = '{:s}_iter{:d}'.format(save_dir, opt.load_iter)
         # test with eval mode. This only affects layers like batchnorm and dropout.
         # For [pix2pix]: we use batchnorm and dropout in the original pix2pix. You can experiment it with and without eval() mode.
         # For [CycleGAN]: It should not affect CycleGAN as CycleGAN uses instancenorm without dropout.
         if opt.eval:
             model.eval()
+        save_dir_by_epoch = save_dir
+        if opt.group_results_by_epoch:
+            save_dir_by_epoch = os.path.join(save_dir, '_{}epoch'.format(epoch))
+            os.makedirs(save_dir_by_epoch)
         for i, data in enumerate(dataset):
             if i >= opt.num_test:  # only apply our model to opt.num_test images.
                 break
@@ -72,11 +76,14 @@ def main():
             img_path = model.get_image_paths()  # get image paths
             if i % 5 == 0:  # save images to an HTML file
                 print('processing (%04d)-th image... %s' % (i, img_path))
-            save_images(web_dir, visuals, img_path, epoch, is_test=True, aspect_ratio=opt.aspect_ratio,
+            save_images(save_dir_by_epoch, visuals, img_path, epoch, is_test=True, aspect_ratio=opt.aspect_ratio,
                         width=opt.display_winsize)
 
-    domains = opt.direction_label.split('to')
-    join_real_fake_images(opt.dataroot, web_dir, save_joined_images_dir, epochs, src_domain=domains[0], target_domain=domains[1])
+    if opt.join_results:
+        domains = opt.direction_label.split('to')
+        save_joined_images_dir = os.path.join(opt.joined_results_dir, opt.direction_label, 'epochs-' + '_'.join(epochs))
+        os.makedirs(save_joined_images_dir, exist_ok=True)
+        join_real_fake_images(opt.dataroot, save_dir, save_joined_images_dir, epochs, src_domain=domains[0], target_domain=domains[1])
 
 
 def join_real_fake_images(src_images_dir, fake_images_dir, save_dir, epochs, src_domain, target_domain):
