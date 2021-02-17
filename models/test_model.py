@@ -10,7 +10,7 @@ class TestModel(BaseModel):
     """
     @staticmethod
     def modify_commandline_options(parser, is_train=True):
-        """Add new dataset-specific options, and rewrite default values for existing options.
+        """Add new datasets-specific options, and rewrite default values for existing options.
 
         Parameters:
             parser          -- original option parser
@@ -50,12 +50,12 @@ class TestModel(BaseModel):
         setattr(self, 'netG' + opt.model_suffix, self.netG)  # store netG in self.
 
     def set_input(self, input):
-        """Unpack input data from the dataloader and perform necessary pre-processing steps.
+        """Unpack input datasets from the dataloader and perform necessary pre-processing steps.
 
         Parameters:
-            input: a dictionary that contains the data itself and its metadata information.
+            input: a dictionary that contains the datasets itself and its metadata information.
 
-        We need to use 'single_dataset' dataset mode. It only load images from one domain.
+        We need to use 'single_dataset' datasets mode. It only load images from one domain.
         """
         self.real = input['A'].to(self.device)
         self.image_paths = input['A_paths']

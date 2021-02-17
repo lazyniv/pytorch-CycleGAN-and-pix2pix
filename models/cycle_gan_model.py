@@ -7,9 +7,9 @@ from . import networks
 
 class CycleGANModel(BaseModel):
     """
-    This class implements the CycleGAN model, for learning image-to-image translation without paired data.
+    This class implements the CycleGAN model, for learning image-to-image translation without paired datasets.
 
-    The model training requires '--dataset_mode unaligned' dataset.
+    The model training requires '--dataset_mode unaligned' datasets.
     By default, it uses a '--netG resnet_9blocks' ResNet generator,
     a '--netD basic' discriminator (PatchGAN introduced by pix2pix),
     and a least-square GANs objective ('--gan_mode lsgan').
@@ -18,7 +18,7 @@ class CycleGANModel(BaseModel):
     """
     @staticmethod
     def modify_commandline_options(parser, is_train=True):
-        """Add new dataset-specific options, and rewrite default values for existing options.
+        """Add new datasets-specific options, and rewrite default values for existing options.
 
         Parameters:
             parser          -- original option parser
@@ -97,10 +97,10 @@ class CycleGANModel(BaseModel):
             self.optimizers.append(self.optimizer_D)
 
     def set_input(self, input):
-        """Unpack input data from the dataloader and perform necessary pre-processing steps.
+        """Unpack input datasets from the dataloader and perform necessary pre-processing steps.
 
         Parameters:
-            input (dict): include the data itself and its metadata information.
+            input (dict): include the datasets itself and its metadata information.
 
         The option 'direction' can be used to swap domain A and domain B.
         """

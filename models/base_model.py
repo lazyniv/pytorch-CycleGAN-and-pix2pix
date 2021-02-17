@@ -9,7 +9,7 @@ class BaseModel(ABC):
     """This class is an abstract base class (ABC) for models.
     To create a subclass, you need to implement the following five functions:
         -- <__init__>:                      initialize the class; first call BaseModel.__init__(self, opt).
-        -- <set_input>:                     unpack data from dataset and apply preprocessing.
+        -- <set_input>:                     unpack datasets from datasets and apply preprocessing.
         -- <forward>:                       produce intermediate results.
         -- <optimize_parameters>:           calculate losses, gradients, and update network weights.
         -- <modify_commandline_options>:    (optionally) add model-specific options and set default options.
@@ -58,10 +58,10 @@ class BaseModel(ABC):
 
     @abstractmethod
     def set_input(self, input):
-        """Unpack input data from the dataloader and perform necessary pre-processing steps.
+        """Unpack input datasets from the dataloader and perform necessary pre-processing steps.
 
         Parameters:
-            input (dict): includes the data itself and its metadata information.
+            input (dict): includes the datasets itself and its metadata information.
         """
         pass
 
@@ -110,7 +110,7 @@ class BaseModel(ABC):
         pass
 
     def get_image_paths(self):
-        """ Return image paths that are used to load current data"""
+        """ Return image paths that are used to load current datasets"""
         return self.image_paths
 
     def update_learning_rate(self):

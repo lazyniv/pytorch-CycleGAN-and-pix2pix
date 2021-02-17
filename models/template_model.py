@@ -11,7 +11,7 @@ Given input-output pairs (data_A, data_B), it learns a network netG that can min
 You need to implement the following functions:
     <modify_commandline_options>:　Add model-specific options and rewrite default values for existing options.
     <__init__>: Initialize this model class.
-    <set_input>: Unpack input data and perform data pre-processing.
+    <set_input>: Unpack input datasets and perform datasets pre-processing.
     <forward>: Run forward pass. This will be called by both <optimize_parameters> and <test>.
     <optimize_parameters>: Update network weights; it will be called in every training iteration.
 """
@@ -32,7 +32,7 @@ class TemplateModel(BaseModel):
         Returns:
             the modified parser.
         """
-        parser.set_defaults(dataset_mode='aligned')  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
+        parser.set_defaults(dataset_mode='aligned')  # You can rewrite default values for this model. For example, this model usually uses aligned datasets as its datasets.
         if is_train:
             parser.add_argument('--lambda_regression', type=float, default=1.0, help='weight for the regression loss')  # You can define new arguments for this model.
 
@@ -70,14 +70,14 @@ class TemplateModel(BaseModel):
         # Our program will automatically call <model.setup> to define schedulers, load networks, and print networks
 
     def set_input(self, input):
-        """Unpack input data from the dataloader and perform necessary pre-processing steps.
+        """Unpack input datasets from the dataloader and perform necessary pre-processing steps.
 
         Parameters:
-            input: a dictionary that contains the data itself and its metadata information.
+            input: a dictionary that contains the datasets itself and its metadata information.
         """
         AtoB = self.opt.direction == 'AtoB'  # use <direction> to swap data_A and data_B
-        self.data_A = input['A' if AtoB else 'B'].to(self.device)  # get image data A
-        self.data_B = input['B' if AtoB else 'A'].to(self.device)  # get image data B
+        self.data_A = input['A' if AtoB else 'B'].to(self.device)  # get image datasets A
+        self.data_B = input['B' if AtoB else 'A'].to(self.device)  # get image datasets B
         self.image_paths = input['A_paths' if AtoB else 'B_paths']  # get image paths
 
     def forward(self):

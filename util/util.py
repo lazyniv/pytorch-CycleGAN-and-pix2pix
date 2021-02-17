@@ -6,11 +6,12 @@ from PIL import Image
 import os
 
 
-def tensor2im(input_image, imtype=np.uint8):
+def tensor2im(input_image, upscale_factor, imtype=np.int32):
+    print("tensor_to_im = ", input_image.shape)
     """"Converts a Tensor array into a numpy image array.
-
     Parameters:
         input_image (tensor) --  the input image tensor array
+        upscale_factor (float) -- the float on which we should multiply the model's output tensor
         imtype (type)        --  the desired type of the converted numpy array
     """
     if not isinstance(input_image, np.ndarray):
@@ -20,11 +21,10 @@ def tensor2im(input_image, imtype=np.uint8):
             return input_image
         image_numpy = image_tensor[0].cpu().float().numpy()  # convert it into a numpy array
         if image_numpy.shape[0] == 1:  # grayscale to RGB
-            image_numpy = np.tile(image_numpy, (3, 1, 1))
-        image_numpy = (np.transpose(image_numpy, (1, 2, 0)) + 1) / 2.0 * 255.0  # post-processing: tranpose and scaling
+            image_numpy = (image_numpy) * upscale_factor
     else:  # if it is a numpy array, do nothing
         image_numpy = input_image
-    return image_numpy.astype(imtype)
+    return image_numpy.astype(imtype)[0]
 
 
 def diagnose_network(net, name='network'):
@@ -48,19 +48,12 @@ def diagnose_network(net, name='network'):
 
 def save_image(image_numpy, image_path, aspect_ratio=1.0):
     """Save a numpy image to the disk
-
     Parameters:
         image_numpy (numpy array) -- input numpy array
         image_path (str)          -- the path of the image
     """
 
-    image_pil = Image.fromarray(image_numpy)
-    h, w, _ = image_numpy.shape
-
-    if aspect_ratio > 1.0:
-        image_pil = image_pil.resize((h, int(w * aspect_ratio)), Image.BICUBIC)
-    if aspect_ratio < 1.0:
-        image_pil = image_pil.resize((int(h / aspect_ratio), w), Image.BICUBIC)
+    image_pil = Image.fromarray(image_numpy, mode='I')
     image_pil.save(image_path)
 
 
