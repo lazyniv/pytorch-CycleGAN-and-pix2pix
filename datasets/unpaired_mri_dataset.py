@@ -3,7 +3,7 @@ from typing import Dict, Any
 from random import shuffle
 
 from datasets.base_dataset import BaseDataset
-from datasets.utils import load_dcm_paths
+from datasets.utils import load_dcm_paths_slices
 from datasets.utils import load_image
 from transforms.base_transformer import BaseTransformer
 
@@ -13,11 +13,11 @@ class UnpairedMRIDataset(BaseDataset):
     def __init__(self, opt, transformer: BaseTransformer):
         BaseDataset.__init__(self, opt, transformer)
 
-        self.dir_A = os.path.join(opt.dataroot, opt.phase + 'A')
-        self.dir_B = os.path.join(opt.dataroot, opt.phase + 'B')
+        self.file_A = os.path.join(opt.dataroot, opt.phase + 'A')
+        self.file_B = os.path.join(opt.dataroot, opt.phase + 'B')
 
-        self.A_paths = sorted(load_dcm_paths(self.dir_A))
-        self.B_paths = sorted(load_dcm_paths(self.dir_B))
+        self.A_paths = sorted(load_dcm_paths_slices(self.file_A))
+        self.B_paths = sorted(load_dcm_paths_slices(self.file_B))
 
         self.A_size = len(self.A_paths)
         self.B_size = len(self.B_paths)

@@ -3,7 +3,7 @@ from typing import Dict, Any
 from random import shuffle
 
 from datasets.base_dataset import BaseDataset
-from datasets.utils import load_dcm_paths
+from datasets.utils import load_dcm_paths_slices
 from datasets.utils import load_image
 from transforms.base_transformer import BaseTransformer
 
@@ -21,7 +21,7 @@ class SingleDataset(BaseDataset):
             opt (Option class) -- stores all the experiment flags; needs to be a subclass of BaseOptions
         """
         BaseDataset.__init__(self, opt, transformer)
-        self.A_paths = sorted(load_dcm_paths(self.dir_A))
+        self.A_paths = sorted(load_dcm_paths_slices(self.dir_A))
         self.transform = transformer.get_transform()
         self.reverse_transform = transformer.get_reverse_transform()
 

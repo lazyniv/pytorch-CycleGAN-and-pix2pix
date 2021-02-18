@@ -1,7 +1,7 @@
 import torch
 import pydicom
-import numpy as np
 import os
+import numpy as np
 
 from typing import List
 
@@ -9,21 +9,20 @@ from typing import List
 DICOM_EXTENSION = '.dcm'
 
 
-def is_dicom_file(filename: str) -> bool:
-    return filename.endswith(DICOM_EXTENSION)
+def load_dcm_paths_slices(path: str) -> List[str]:
+    with open(path, 'r') as f:
+        studies = f.read().splitlines()
 
+    if studies[-1] == '\n':
+        studies = studies[:-1]
 
-def load_dcm_paths(folder: str) -> List[str]:
-    images = []
-    assert os.path.isdir(folder), '%s is not a valid directory' % dir
+    slices = list(
+        np.array([
+            list(map(lambda x: os.path.join(study, x), os.listdir(study))) for study in studies
+        ]).flat
+    )
 
-    for root, _, files in sorted(os.walk(folder)):
-        for file in files:
-            if is_dicom_file(file):
-                path = os.path.join(root, file)
-                images.append(path)
-
-    return images
+    return slices
 
 
 def load_image(path: str) -> np.ndarray:

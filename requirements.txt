@@ -9,3 +9,5 @@ numpy>=1.19.0
 requests>=2.22.0
 bs4>=0.0.1
 beautifulsoup4>=4.9.1
+fastai>=2.2.5
+pydicom>=2.0.0
