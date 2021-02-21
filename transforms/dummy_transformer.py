@@ -16,7 +16,6 @@ class DummyTransformer(BaseTransformer):
         transform = [
             transforms.ToTensor(),
             transforms.Resize((self.opt.load_size, self.opt.load_size), interpolation=2),
-            #transforms.Lambda(lambda tensor: F.interpolate(tensor, size=(1, self.opt.load_size, self.opt.load_size), mode='bicubic')),
             transforms.Lambda(lambda tensor: fill_negative_values(tensor)),
             transforms.Lambda(lambda tensor: tensor / self.opt.scale_factor),
 
