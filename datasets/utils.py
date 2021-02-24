@@ -16,13 +16,12 @@ def load_dcm_paths_slices(path: str) -> List[str]:
     if studies[-1] == '\n':
         studies = studies[:-1]
 
-    slices = list(
-        np.array([
-            list(map(lambda x: os.path.join(study, x), os.listdir(study))) for study in studies
-        ]).flat
-    )
+    def flatten(list_2d):
+        return [item for sublist in list_2d for item in sublist]
 
-    return slices
+    slices = [list(map(lambda x: os.path.join(study, x), os.listdir(study))) for study in studies]
+
+    return flatten(slices)
 
 
 def load_image(path: str) -> np.ndarray:
