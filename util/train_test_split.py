@@ -31,9 +31,9 @@ def train_test_split_by_studies(
     B_test = [B_studies[i] for i in B_test_indexes]
     B_train = list(set(B_studies) - set(B_test))
 
-    _save_studies_paths_to_file(A_train, dst_folder, 'trainA')
+    _save_slices_paths_to_file(A_train, dst_folder, 'trainA')
+    _save_slices_paths_to_file(B_train, dst_folder, 'trainB')
     _save_studies_paths_to_file(A_test, dst_folder, 'testA')
-    _save_studies_paths_to_file(B_train, dst_folder, 'trainB')
     _save_studies_paths_to_file(B_test, dst_folder, 'testB')
 
 
@@ -47,6 +47,25 @@ def _save_studies_paths_to_file(
     with open(file_path, 'w') as f:
         for study in studies:
             f.write("{}\n".format(study))
+
+
+def _save_slices_paths_to_file(
+        studies: List[str],
+        dst_folder: str,
+        label: str
+):
+    file_path = os.path.join(os.path.abspath(dst_folder), label)
+
+    def flatten(list_2d):
+        return [item for sublist in list_2d for item in sublist]
+
+    slices = [list(map(lambda x: os.path.join(study, x), os.listdir(study))) for study in studies]
+
+    slices = flatten(slices)
+
+    with open(file_path, 'w') as f:
+        for _slice in slices:
+            f.write("{}\n".format(_slice))
 
 
 def split():

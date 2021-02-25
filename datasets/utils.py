@@ -11,17 +11,12 @@ DICOM_EXTENSION = '.dcm'
 
 def load_dcm_paths_slices(path: str) -> List[str]:
     with open(path, 'r') as f:
-        studies = f.read().splitlines()
+        slices = f.read().splitlines()
 
-    if studies[-1] == '\n':
-        studies = studies[:-1]
+    if slices[-1] == '\n':
+        slices = slices[:-1]
 
-    def flatten(list_2d):
-        return [item for sublist in list_2d for item in sublist]
-
-    slices = [list(map(lambda x: os.path.join(study, x), os.listdir(study))) for study in studies]
-
-    return flatten(slices)
+    return slices
 
 
 def load_image(path: str) -> np.ndarray:
