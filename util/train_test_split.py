@@ -66,25 +66,3 @@ def _save_slices_paths_to_file(
     with open(file_path, 'w') as f:
         for _slice in slices:
             f.write("{}\n".format(_slice))
-
-
-def split():
-    A_folders = [
-        '/home/dima/code/diploma/pytorch-CycleGAN-and-pix2pix/modalityA1',
-        '/home/dima/code/diploma/pytorch-CycleGAN-and-pix2pix/modalityA2',
-    ]
-
-    B_folders = [
-        '/home/dima/code/diploma/pytorch-CycleGAN-and-pix2pix/modalityB1',
-        '/home/dima/code/diploma/pytorch-CycleGAN-and-pix2pix/modalityB2',
-    ]
-
-    A_test_size = 1
-    B_test_size = 1
-
-    dst_folder = '/home/dima/code/diploma/pytorch-CycleGAN-and-pix2pix/data/test1'
-
-    train_test_split_by_studies(A_folders, B_folders, A_test_size, B_test_size, dst_folder)
-
-if __name__ == '__main__':
-    split()
