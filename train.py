@@ -25,8 +25,17 @@ if __name__ == '__main__':
         visualizer.reset()              # reset the visualizer: make sure it saves the results to HTML at least once every epoch
         model.update_learning_rate()    # update learning rates in the beginning of every epoch.
 
-        for i, data in enumerate(data_loader):  # inner loop within one epoch
-            iter_start_time = time.time()  # timer for computation per iteration
+        data_iterator = iter(data_loader)
+
+        while True:
+            iter_start_time = time.time()
+            try:
+                data = next(data_iterator)
+            except StopIteration:
+                break
+            except Exception as e:
+                print(e)
+                continue
 
             if total_iters % opt.print_freq == 0:
                 t_data = iter_start_time - iter_data_time
