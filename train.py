@@ -10,7 +10,7 @@ from util.visualizer import Visualizer
 if __name__ == '__main__':
     opt = TrainOptions().parse()  # TODO change options format
     logging.basicConfig(
-        filename=os.path.join(opt.checkpoints_dir, 'network_logs.log'),
+        filename=os.path.join(opt.checkpoints_dir, opt.name, 'network_logs.log'),
         format='%(asctime)s  %(name)s  %(levelname)s: %(message)s',
         level=logging.DEBUG
     )
