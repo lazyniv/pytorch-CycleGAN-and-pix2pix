@@ -38,14 +38,14 @@ if __name__ == '__main__':
         data_iterator = iter(data_loader)
 
         while True:
-            logging.info("start_iteration")
+            logging.info("Start {} iteration".format(epoch_iter))
             iter_start_time = time.time()
             try:
                 data = next(data_iterator)
             except StopIteration:
                 break
             except Exception as e:
-                logging.error("skipping iteration with error: \n" + str(e))
+                logging.error("Skipping iteration with error: \n" + str(e))
                 continue
 
             if total_iters % opt.print_freq == 0:
