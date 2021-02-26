@@ -1,11 +1,19 @@
 import time
 from options.train_options import TrainOptions
 from data_loaders import create_data_loader
+import logging
+import os
 from models import create_model
 from util.visualizer import Visualizer
 
+
 if __name__ == '__main__':
     opt = TrainOptions().parse()  # TODO change options format
+    logging.basicConfig(
+        filename=os.path.join(opt.checkpoints_dir, 'network_logs.log'),
+        format='%(asctime)s  %(name)s  %(levelname)s: %(message)s',
+        level=logging.DEBUG
+    )
     data_loader = create_data_loader(opt)
     dataset_size = len(data_loader)
 
@@ -17,6 +25,8 @@ if __name__ == '__main__':
     total_iters = 0                # the total number of training iterations
 
     for epoch in range(opt.epoch_count, opt.n_epochs + opt.n_epochs_decay + 1):  # outer loop for different epochs; we save the model by <epoch_count>, <epoch_count>+<save_latest_freq>
+        logging.info("Start {epoch} epoch".format(epoch=epoch))
+        logging.info("Shuffling index...")
         data_loader.shuffle_index()
 
         epoch_start_time = time.time()  # timer for entire epoch
@@ -28,13 +38,14 @@ if __name__ == '__main__':
         data_iterator = iter(data_loader)
 
         while True:
+            logging.info("start_iteration")
             iter_start_time = time.time()
             try:
                 data = next(data_iterator)
             except StopIteration:
                 break
             except Exception as e:
-                print(e)
+                logging.error("skipping iteration with error: \n" + str(e))
                 continue
 
             if total_iters % opt.print_freq == 0:
@@ -64,6 +75,8 @@ if __name__ == '__main__':
                 model.save_networks(save_suffix)
 
             iter_data_time = time.time()
+            logging.info("end of iteration with {} seconds".format(iter_data_time - iter_start_time))
+
         if epoch % opt.save_epoch_freq == 0:              # cache our model every <save_epoch_freq> epochs
             print('saving the model at the end of epoch %d, iters %d' % (epoch, total_iters))
             model.save_networks('latest')
@@ -72,3 +85,6 @@ if __name__ == '__main__':
         print('End of epoch %d / %d \t Time Taken: %d sec' % (
             epoch, opt.n_epochs + opt.n_epochs_decay, time.time() - epoch_start_time)
         )
+
+        logging.info('End of epoch %d / %d \t Time Taken: %d sec' % (
+            epoch, opt.n_epochs + opt.n_epochs_decay, time.time() - epoch_start_time))

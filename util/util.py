@@ -7,7 +7,6 @@ import os
 
 
 def tensor2im(input_image, upscale_factor, imtype=np.int32):
-    print("tensor_to_im = ", input_image.shape)
     """"Converts a Tensor array into a numpy image array.
     Parameters:
         input_image (tensor) --  the input image tensor array
