@@ -28,6 +28,8 @@ if __name__ == '__main__':
         logging.info("Start {epoch} epoch".format(epoch=epoch))
         logging.info("Shuffling index...")
         data_loader.shuffle_index()
+        logging.info("first 50 elements of shuffled A index " + str(data_loader.dataset.A_index[:50]))
+        logging.info("first 50 elements of shuffled B index " + str(data_loader.dataset.B_index[:50]))
 
         epoch_start_time = time.time()  # timer for entire epoch
         iter_data_time = time.time()    # timer for data loading per iteration
@@ -35,18 +37,9 @@ if __name__ == '__main__':
         visualizer.reset()              # reset the visualizer: make sure it saves the results to HTML at least once every epoch
         model.update_learning_rate()    # update learning rates in the beginning of every epoch.
 
-        data_iterator = iter(data_loader)
-
-        while True:
-            logging.info("Start {} iteration".format(epoch_iter))
+        for i, data in enumerate(data_loader):
+            logging.info("Start {} iteration of {} epoch".format(epoch_iter, epoch))
             iter_start_time = time.time()
-            try:
-                data = next(data_iterator)
-            except StopIteration:
-                break
-            except Exception as e:
-                logging.error("Skipping iteration with error: \n" + str(e))
-                continue
 
             if total_iters % opt.print_freq == 0:
                 t_data = iter_start_time - iter_data_time

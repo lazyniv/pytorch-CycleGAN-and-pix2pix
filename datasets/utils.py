@@ -2,6 +2,7 @@ import torch
 import pydicom
 import os
 import numpy as np
+import logging
 
 from typing import List
 
@@ -20,9 +21,12 @@ def load_dcm_paths_slices(path: str) -> List[str]:
 
 
 def load_image(path: str) -> np.ndarray:
-    ds = pydicom.dcmread(path)
-    pixel_array = ds.pixel_array
-    return pixel_array
+    try:
+        ds = pydicom.dcmread(path)
+        pixel_array = ds.pixel_array
+        return pixel_array
+    except Exception as e:
+        logging.error("Error in file {} :".format(path), str(e))
 
 
 def to_dicom(tensor: torch.Tensor): ...

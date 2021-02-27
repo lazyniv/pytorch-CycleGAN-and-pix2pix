@@ -1,6 +1,7 @@
-from .base_transformer import BaseTransformer
 import torchvision.transforms as transforms
-import torch.nn.functional as F
+
+
+from .base_transformer import BaseTransformer
 from . import fill_negative_values
 
 
@@ -15,7 +16,7 @@ class DummyTransformer(BaseTransformer):
     def get_transform(self) -> transforms.Compose:
         transform = [
             transforms.ToTensor(),
-            transforms.Resize((self.opt.load_size, self.opt.load_size), interpolation=2),
+            transforms.Resize((self.opt.load_size, self.opt.load_size)),
             transforms.Lambda(lambda tensor: fill_negative_values(tensor)),
             transforms.Lambda(lambda tensor: tensor / self.opt.scale_factor),
 
