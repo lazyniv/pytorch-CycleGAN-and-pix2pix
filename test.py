@@ -28,7 +28,7 @@ See frequently asked questions at: https://github.com/junyanz/pytorch-CycleGAN-a
 """
 import os
 from options.test_options import TestOptions
-from data import create_data_loader
+from data_loaders import create_data_loader
 from models import create_model
 from util.visualizer import save_images
 from util import html
@@ -39,31 +39,45 @@ if __name__ == '__main__':
     # hard-code some parameters for test
     opt.num_threads = 0   # test code only supports num_threads = 0
     opt.batch_size = 1    # test code only supports batch_size = 1
-    opt.serial_batches = True  # disable datasets shuffling; comment this line if results on randomly chosen images are needed.
-    opt.no_flip = True    # no flip; comment this line if results on flipped images are needed.
+    #opt.serial_batches = True  # disable datasets shuffling; comment this line if results on randomly chosen images are needed.
+    #opt.no_flip = True    # no flip; comment this line if results on flipped images are needed.
     opt.display_id = -1   # no visdom display; the test code saves the results to a HTML file.
     dataset = create_data_loader(opt)  # create a datasets given opt.dataset_mode and other options
     model = create_model(opt)      # create a model given opt.model and other options
     model.setup(opt)               # regular setup: load and print networks; create schedulers
     # create a website
-    web_dir = os.path.join(opt.results_dir, opt.name, '{}_{}'.format(opt.phase, opt.epoch))  # define the website directory
-    if opt.load_iter > 0:  # load_iter is 0 by default
-        web_dir = '{:s}_iter{:d}'.format(web_dir, opt.load_iter)
-    print('creating web directory', web_dir)
-    webpage = html.HTML(web_dir, 'Experiment = %s, Phase = %s, Epoch = %s' % (opt.name, opt.phase, opt.epoch))
     # test with eval mode. This only affects layers like batchnorm and dropout.
     # For [pix2pix]: we use batchnorm and dropout in the original pix2pix. You can experiment it with and without eval() mode.
     # For [CycleGAN]: It should not affect CycleGAN as CycleGAN uses instancenorm without dropout.
-    if opt.eval:
-        model.eval()
+
     for i, data in enumerate(dataset):
-        if i >= opt.num_test:  # only apply our model to opt.num_test images.
+        if i >= opt.num_test:
             break
-        model.set_input(data)  # unpack datasets from datasets loader
-        model.test()           # run inference
-        visuals = model.get_current_visuals()  # get image results
-        img_path = model.get_image_paths()     # get image paths
-        if i % 5 == 0:  # save images to an HTML file
-            print('processing (%04d)-th image... %s' % (i, img_path))
+
+        study = data['study']
+        slices = data['slices']
+        print('processing {}-th study {}...'.format(i, study))
+
+        for j, _slice in enumerate(slices):
+            print('processing {}-th slice {}...'.format(j, _slice['A_paths']))
+
+            inference_results_by_epochs = []
+
+            for epoch in opt.epochs:
+                print('processing {}-th epoch'.format(epoch))
+
+                opt.epoch = epoch
+                model = create_model(opt)  # create a model given opt.model and other options
+                model.setup(opt)
+                model.eval()
+
+                model.set_input(_slice)
+                model.test()           # run inference
+                inference_results.append({
+                    "path": _slice['A_paths'],
+                    "visuals": model.get_current_visuals()
+                })
+
+
+
         save_images(webpage, visuals, img_path, upscale_factor=opt.scale_factor, aspect_ratio=opt.aspect_ratio, width=opt.display_winsize)
-    webpage.save()  # save the HTML

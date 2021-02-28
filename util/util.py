@@ -19,11 +19,12 @@ def tensor2im(input_image, upscale_factor, imtype=np.int32):
         else:
             return input_image
         image_numpy = image_tensor[0].cpu().float().numpy()  # convert it into a numpy array
-        if image_numpy.shape[0] == 1:  # grayscale to RGB
-            image_numpy = (image_numpy) * upscale_factor
+        image_numpy = image_numpy * upscale_factor
     else:  # if it is a numpy array, do nothing
-        image_numpy = input_image
+        image_numpy = input_image * upscale_factor
     return image_numpy.astype(imtype)[0]
+
+def int32_image_to_uint8(input_image)
 
 
 def diagnose_network(net, name='network'):

@@ -5,12 +5,43 @@ import ntpath
 import time
 from . import util, html
 from subprocess import Popen, PIPE
+from fpdf import FPDF
+from PIL import Image
 
 
 if sys.version_info[0] == 2:
     VisdomExceptionBase = Exception
 else:
     VisdomExceptionBase = ConnectionError
+
+
+def save_images_to_pdf_by_study(inference_results, study, upscale_factor):
+
+    for _slice in inference_results:
+        path = _slice['path']
+        for visuals in 
+
+
+def images_to_pdf(list_images, out_pdf_path):
+    width = 1024
+    height = 3112
+
+    pdf = FPDF(unit="pt", format=[width, height])
+    pdf.add_page()
+
+    i = 0
+
+    for image in list_images:
+        if i != 0:
+            pdf.image(image, 0, i * 1024 + i * 20)
+        else:
+            pdf.image(image, 0, 0)
+        i += 1
+        if i % 3 == 0:
+            pdf.add_page()
+            i = 0
+
+    pdf.output(out_pdf_path + ".pdf", "F")
 
 
 def save_images(webpage, visuals, image_path, upscale_factor, aspect_ratio=1.0, width=256):

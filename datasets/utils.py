@@ -10,7 +10,7 @@ from typing import List
 DICOM_EXTENSION = '.dcm'
 
 
-def load_dcm_paths_slices(path: str) -> List[str]:
+def load_paths(path: str) -> List[str]:
     with open(path, 'r') as f:
         slices = f.read().splitlines()
 
@@ -18,6 +18,12 @@ def load_dcm_paths_slices(path: str) -> List[str]:
         slices = slices[:-1]
 
     return slices
+
+
+def studies_to_slices(studies: List[str]) -> List[List[str]]:
+    return [
+        list(map(lambda _slice: os.path.join(study, _slice), os.listdir(study))) for study in studies
+    ]
 
 
 def load_image(path: str) -> np.ndarray:
