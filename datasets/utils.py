@@ -20,7 +20,7 @@ def load_paths(path: str) -> List[str]:
     return slices
 
 
-def studies_to_slices(studies: List[str]) -> List[List[str]]:
+def group_slices_by_study(studies: List[str]) -> List[List[str]]:
     return [
         list(map(lambda _slice: os.path.join(study, _slice), os.listdir(study))) for study in studies
     ]

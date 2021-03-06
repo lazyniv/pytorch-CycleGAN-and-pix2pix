@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-import torchvision.transforms as transforms
+from torch import Tensor
+import numpy as np
 
 
 class BaseTransformer(ABC):
@@ -11,8 +12,8 @@ class BaseTransformer(ABC):
         self.opt = opt
 
     @abstractmethod
-    def get_transform(self) -> transforms.Compose: ...
+    def forward_transform(self, pixel_array: np.ndarray) -> Tensor: ...
 
     @abstractmethod
-    def get_reverse_transform(self) -> transforms.Compose: ...
+    def backward_transform(self, tensor: Tensor) -> np.ndarray: ...
 

@@ -12,7 +12,7 @@ See our template datasets class 'template_dataset.py' for more details.
 """
 
 import importlib
-from datasets.base_dataset import BaseTrainDataset
+from datasets.base_dataset import BaseTrainDataset, BaseTestDataset
 
 
 def find_dataset_using_name(dataset_name):
@@ -28,7 +28,7 @@ def find_dataset_using_name(dataset_name):
     dataset = None
     target_dataset_name = dataset_name.replace('_', '') + 'dataset'
     for name, cls in dataset_lib.__dict__.items():
-        if name.lower() == target_dataset_name.lower() and issubclass(cls, BaseTrainDataset):
+        if name.lower() == target_dataset_name.lower() and (issubclass(cls, BaseTrainDataset) or issubclass(cls, BaseTestDataset)):
             dataset = cls
 
     if dataset is None:

@@ -24,7 +24,6 @@ def tensor2im(input_image, upscale_factor, imtype=np.int32):
         image_numpy = input_image * upscale_factor
     return image_numpy.astype(imtype)[0]
 
-def int32_image_to_uint8(input_image)
 
 
 def diagnose_network(net, name='network'):

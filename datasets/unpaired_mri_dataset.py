@@ -22,12 +22,6 @@ class UnpairedMRITrainDataset(BaseTrainDataset):
         self.A_size = len(self.A_paths)
         self.B_size = len(self.B_paths)
 
-        self.transform_A = transformer.get_transform()
-        self.transform_B = transformer.get_transform()
-
-        self.reverse_transform_A = transformer.get_reverse_transform()
-        self.reverse_transform_B = transformer.get_reverse_transform()
-
         if self.A_size < self.B_size:
             self.B_index = list(range(0, self.B_size))
             self.A_index = (list(range(0, self.A_size)) * (self.B_size // self.A_size + 1))[:self.B_size]
@@ -45,8 +39,8 @@ class UnpairedMRITrainDataset(BaseTrainDataset):
         A_img = load_image(A_path)
         B_img = load_image(B_path)
 
-        A = self.transform_A(A_img)
-        B = self.transform_B(B_img)
+        A = self.transformer.forward_transform(A_img)
+        B = self.transformer.forward_transform(B_img)
 
         return {
             'A': A,

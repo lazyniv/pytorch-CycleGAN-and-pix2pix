@@ -1,4 +1,6 @@
 import torchvision.transforms as transforms
+import torch
+import numpy as np
 
 
 from .base_transformer import BaseTransformer
@@ -13,18 +15,18 @@ class DummyTransformer(BaseTransformer):
     def __init__(self, opt):
         super().__init__(opt)
 
-    def get_transform(self) -> transforms.Compose:
-        transform = [
+    def forward_transform(self, pixel_array: np.ndarray) -> torch.Tensor:
+        transform = transforms.Compose([
             transforms.ToTensor(),
             transforms.Resize((self.opt.load_size, self.opt.load_size)),
             transforms.Lambda(lambda tensor: fill_negative_values(tensor)),
             transforms.Lambda(lambda tensor: tensor / self.opt.scale_factor),
 
-        ]
-        return transforms.Compose(transform)
+        ])
+        return transform(pixel_array)
 
-    def get_reverse_transform(self) -> transforms.Compose:
-        transform = [
-            transforms.Lambda(lambda tensor: tensor * self.opt.scale_factor),
-        ]
-        return transforms.Compose(transform)
+    def backward_transform(self, tensor: torch.Tensor) -> np.ndarray:
+        image_tensor = tensor.data
+        image_numpy = image_tensor[0].cpu().float().numpy()
+        image_numpy *= self.opt.scale_factor
+        return image_numpy.astype(np.int32)[0]
