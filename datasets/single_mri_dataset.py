@@ -15,7 +15,7 @@ class SingleMRIDataset(BaseTestDataset):
 
     def __getitem__(self, index):
         return {
-            'path_to_study': self.paths[index],
+            'study_path': self.paths[index],
             'slices': [
                 {
                     'A': self.transformer.forward_transform(load_image(_slice)),

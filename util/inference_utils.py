@@ -8,10 +8,10 @@ import cv2
 
 def save_studies_to_pdf(studies_inference, save_dir, opt):
     for study in studies_inference:
-        pdf_name = f"{os.path.splitext(ntpath.basename(study['study_path']))[0]}.pdf"
+        pdf_name = f"{ntpath.basename(study['study_path'])}.pdf"
         save_path = os.path.join(save_dir, pdf_name)
-        image_folder = os.path.join(save_dir, study['study_path'])
-        os.mkdir(image_folder)
+        image_folder = os.path.join(save_dir, ntpath.basename(study['study_path']))
+        os.makedirs(image_folder, exist_ok=True)
         _study_to_pdf(study, save_path, image_folder, opt)
 
 
@@ -19,7 +19,7 @@ def save_studies_to_folders(studies_inference, save_root_dir):
     for study in studies_inference:
         study_dir_name = os.path.splitext(ntpath.basename(study['study_path']))[0]
         study_dir = os.path.join(save_root_dir, study_dir_name)
-        os.mkdir(study_dir)
+        os.makedirs(study_dir, exist_ok=True)
         _save_study_to_dir(study, study_dir)
 
 
@@ -27,18 +27,18 @@ def _save_study_to_dir(study, save_dir):
     for _slice in study['slices']:
         slice_name = os.path.splitext(ntpath.basename(_slice['slice_path']))[0]
         slice_save_dir = os.path.join(save_dir, slice_name)
-        os.mkdir(slice_save_dir)
+        os.makedirs(slice_save_dir, exist_ok=True)
 
         real_pixel_array = _slice['real_slice']
         real_image = Image.fromarray(real_pixel_array, mode='I')
-        real_image.save(os.path.join(slice_save_dir), 'real.tif')
+        real_image.save(os.path.join(slice_save_dir, 'real.tif'))
 
         for fake_visual in _slice['fake_visuals']:
             epoch = fake_visual['epoch']
 
             fake_pixel_array = fake_visual['fake_slice']
             fake_image = Image.fromarray(fake_pixel_array, mode='I')
-            fake_image.save(os.path.join(slice_save_dir), f'{epoch}_epoch.tif')
+            fake_image.save(os.path.join(slice_save_dir, f'{epoch}_epoch.tif'))
 
 
 def _study_to_pdf(study, save_path, image_save_folder, opt):
@@ -59,7 +59,7 @@ def _study_to_pdf(study, save_path, image_save_folder, opt):
         real_image_path = _prepare_image_to_pdf(
             real,
             slice_name,
-            f"real {opt.source_modality} " + slice_name,
+            f"real {opt.source_modality}, slice {int(slice_name.split('_')[2])}",
             image_save_folder,
         )
         pdf.image(real_image_path, x=0, y=slice_offset * slice_counter_by_page)
@@ -95,7 +95,7 @@ def _study_to_pdf(study, save_path, image_save_folder, opt):
                 slice_counter_by_page = 0
                 pdf.add_page()
 
-        pdf.output(save_path, "F")
+    pdf.output(save_path, "F")
 
 
 def _prepare_image_to_pdf(
@@ -107,10 +107,10 @@ def _prepare_image_to_pdf(
 ) -> str:
     image = _convert_to_uint8_image(pixel_array)
     image = _write_txt_to_image(image, text)
-    if epoch:
-        image_save_path = os.path.join(image_save_folder, os.path.splitext(slice_name)[0])
+    if not epoch:
+        image_save_path = os.path.join(image_save_folder, os.path.splitext(slice_name)[0] + '.png')
     else:
-        image_save_path = os.path.join(image_save_folder, os.path.splitext(slice_name)[0] + f'_{epoch}_epoch')
+        image_save_path = os.path.join(image_save_folder, os.path.splitext(slice_name)[0] + f'_{epoch}_epoch' + '.png')
     _save_image(image, image_save_path)
     return image_save_path
 
@@ -120,8 +120,8 @@ def _convert_to_uint8_image(pixel_array: np.ndarray) -> Image:
     return uint8_img
 
 
-def _save_image(image: Image, save_path, ext='.png'):
-    image.save(save_path + ext)
+def _save_image(image: Image, save_path):
+    image.save(save_path)
 
 
 def _write_txt_to_image(image: Image, text: str) -> Image:

@@ -1,5 +1,7 @@
 import os
 
+from tqdm import tqdm
+
 from options.test_options import TestOptions
 from data_loaders import create_data_loader
 from models import create_model
@@ -13,61 +15,57 @@ if __name__ == '__main__':
     opt.display_id = -1
     data_loader = create_data_loader(opt)
 
-    studies_inference = []
-
-    for i, data in enumerate(data_loader):
-
-        if i >= opt.num_test:
-            break
-
-        study = data['path_to_study']
-        slices = data['slices']
-        print('processing {}-th study {}...'.format(i, study))
-
-        study_inference = {
-            'study_path': study,
-            'slices': []
+    inference = [
+        {
+            'study_path': data['study_path'][0],
+            'slices': [
+                {
+                    'input': _slice['A'],
+                    'slice_path': _slice['A_paths'][0],
+                    'real_slice': data_loader.dataset.transformer.backward_transform(_slice['A']),
+                    'fake_visuals': []
+                }
+                for _slice in data['slices']
+            ]
         }
+        for data in data_loader
+    ]
 
-        for j, _slice in enumerate(slices):
-            print('processing {}-th slice {}...'.format(j, _slice['A_paths']))
+    for epoch in tqdm(opt.epochs):
+        print(f'processing {epoch}-th epoch')
 
-            slice_inference = {
-                'slice_path': _slice['A_paths'],
-                'real_slice': data_loader.dataset.transformer.backward_transform(_slice['A']),
-            }
+        opt.epoch = epoch
+        model = create_model(opt)  # create a model given opt.model and other options
+        model.setup(opt)
+        model.eval()
 
-            fake_visuals = []
-
-            for epoch in opt.epochs:
-                print('processing {}-th epoch'.format(epoch))
-
-                opt.epoch = epoch
-                model = create_model(opt)  # create a model given opt.model and other options
-                model.setup(opt)
-                model.eval()
-
-                model.set_input(_slice)
-                model.test()           # run inference
-                fake_visuals.append({
-                    "epoch": epoch,
-                    "fake_slice": data_loader.dataset.transformer.backward_transform(model.get_current_visuals()['fake'])
+        for i, study in enumerate(inference):
+            print(f"processing {i}-th study {study['study_path']}")
+            for j, _slice in enumerate(study['slices']):
+                print(f"processing {j}-th slice {_slice['slice_path']}")
+                model.set_input({
+                    'A': _slice['input'],
+                    'A_paths': _slice['slice_path']
                 })
+                model.test()
 
-            slice_inference['fake_visuals'] = fake_visuals
-            study_inference['slices'].append(slice_inference)
-
-        studies_inference.append(study_inference)
+                _slice['fake_visuals'].append(
+                    {
+                        'epoch': epoch,
+                        'fake_slice': data_loader.dataset.transformer.backward_transform(model.get_current_visuals()['fake'])
+                    }
+                )
 
     root_inference_dir = os.path.join(opt.results_dir, opt.name)
-    os.mkdir(root_inference_dir)
+    os.makedirs(root_inference_dir, exist_ok=True)
+
+    print('save inference results to folders ...')
+    save_images_root = os.path.join(root_inference_dir, 'images')
+    os.makedirs(save_images_root, exist_ok=True)
+    save_studies_to_folders(inference, save_images_root)
 
     if opt.save_inference_to_pdf:
+        print('save inference results to pdf ...')
         pdfs_save_dir = os.path.join(root_inference_dir, 'pdf')
-        os.mkdir(pdfs_save_dir)
-        save_studies_to_pdf(studies_inference, pdfs_save_dir, opt)
-
-    save_images_root = os.path.join(root_inference_dir, 'images')
-    os.mkdir(save_images_root)
-    save_studies_to_folders(studies_inference, opt.save_inference_root_dir)
-
+        os.makedirs(pdfs_save_dir, exist_ok=True)
+        save_studies_to_pdf(inference, pdfs_save_dir, opt)
